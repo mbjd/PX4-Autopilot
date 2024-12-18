@@ -341,24 +341,15 @@ void Sih::generate_force_and_torques()
 
 	} else if (_vehicle == VehicleType::SVTOL) {
 
-		double fwd_thrust = _T_MAX * 2 * _u[8];
-
-		// if (fwd_thrust > 0.0) {
-		// 	PX4_INFO("Forward thrust from _u[8]: %.2f", fwd_thrust);
-		// }
-
-		// for (int j=0; j<NB_MOTORS; j++) {
-		// 	PX4_INFO("_u[%d] = %.2f ", j, (double) _u[j]);
-		// }
-
-		Vector<float, NB_MOTORS> u = Vector<float, NB_MOTORS>(_u);
-		u.transpose().print();
-
-		_T_B = Vector3f(fwd_thrust, 0.0f, -_T_MAX * (+_u[0] + _u[1] + _u[2] + _u[3]));
+		_T_B = Vector3f(_T_MAX * 2 * _u[8], 0.0f, -_T_MAX * (+_u[0] + _u[1] + _u[2] + _u[3]));
 		_Mt_B = Vector3f(_L_ROLL * _T_MAX * (-_u[0] + _u[1] + _u[2] - _u[3]),
 				 _L_PITCH * _T_MAX * (+_u[0] - _u[1] + _u[2] - _u[3]),
 				 _Q_MAX * (+_u[0] + _u[1] - _u[2] - _u[3]));
+
+		// thrust 0 because it is already contained in _T_B. in
+		// equations_of_motion they are all summed into sum_of_forces_E.
 		generate_fw_aerodynamics(_u[4], _u[6], _u[7], 0);
+
 	}
 }
 
@@ -561,8 +552,6 @@ void Sih::send_airspeed(const hrt_abstime &time_now_us)
 	// TODO: send differential pressure instead?
 	airspeed_s airspeed{};
 	airspeed.timestamp_sample = time_now_us;
-
-	// regardless of vehicle type, body frame, etc this holds as long as wind=0
 	airspeed.true_airspeed_m_s = fmaxf(0.1f, _v_E.norm() + generate_wgn() * 0.2f);
 	airspeed.indicated_airspeed_m_s = airspeed.true_airspeed_m_s * sqrtf(_wing_l.get_rho() / RHO);
 	airspeed.air_temperature_celsius = NAN;
@@ -580,7 +569,7 @@ void Sih::send_dist_snsr(const hrt_abstime &time_now_us)
 	device_id.devid_s.devtype = DRV_DIST_DEVTYPE_SIM;
 
 	distance_sensor_s distance_sensor{};
-	// distance_sensor.timestamp_sample = time_now_us;
+	//distance_sensor.timestamp_sample = time_now_us;
 	distance_sensor.device_id = device_id.devid;
 	distance_sensor.type = distance_sensor_s::MAV_DISTANCE_SENSOR_LASER;
 	distance_sensor.orientation = distance_sensor_s::ROTATION_DOWNWARD_FACING;
