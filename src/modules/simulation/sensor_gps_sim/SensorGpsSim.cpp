@@ -110,7 +110,7 @@ void SensorGpsSim::Run()
 
 		check_failure_injection();
 
-		PX4_INFO("gps blocked: %d", (int) _gps_blocked);
+		// PX4_INFO("gps blocked: %d", (int) _gps_blocked);
 
 		if (!_gps_blocked) {
 
@@ -192,7 +192,7 @@ void SensorGpsSim::Run()
 void SensorGpsSim::check_failure_injection()
 {
 	vehicle_command_s vehicle_command;
-	PX4_INFO("ENTERING check_failure_injection");
+	// PX4_INFO("ENTERING check_failure_injection");
 
 	while (_vehicle_command_sub.update(&vehicle_command)) {
 		if (vehicle_command.command != vehicle_command_s::VEHICLE_CMD_INJECT_FAILURE) {
