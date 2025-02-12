@@ -86,6 +86,12 @@ publications:
   - topic: /fmu/out/vtol_vehicle_status
     type: px4_msgs::msg::VtolVehicleStatus
 
+  - topic: /fmu/out/vehicle_air_data
+    type: px4_msgs::msg::VehicleAirData
+
+  - topic: /fmu/out/airspeed_validated
+    type: px4_msgs::msg::AirspeedValidated
+
 # Create uORB::Publication
 subscriptions:
   - topic: /fmu/in/register_ext_component_request
